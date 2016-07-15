@@ -57,6 +57,7 @@ INCLUDEDIRS += ./Drivers/HAL/Inc
 INCLUDEDIRS += ./Drivers/CMSIS/Include
 INCLUDEDIRS += ./Drivers/CMSIS/Device/ST/$(CPU_FAMILY)/Include
 INCLUDEDIRS += $(wildcard ./Drivers/BSP/Components/*)
+INCLUDEDIRS += ./Utilities/Log
 
 INCLUDEDIRS += ./Config
 
@@ -64,8 +65,13 @@ LIBSOURCES =
 LIBSOURCES += $(wildcard ./Drivers/HAL/Src/*.c)
 LIBSOURCES += $(wildcard ./Drivers/BSP/$(BSP_NAME)/*.c)
 LIBSOURCES += $(wildcard ./Drivers/BSP/Components/*/*.c)
+LIBSOURCES += ./Utilities/Log/lcd_log.c
 
 LIBOBJS = $(LIBSOURCES:.c=.o) 
+
+# Workaround
+STUBS_SRC = ./Utilities/Log/stubs.c
+STUBS_OBJ = $(STUBS_SRC:.c=.o)
 
 # Project specific sources
 SOURCES = $(shell find ./Src -name *.c)
@@ -88,7 +94,7 @@ CFLAGS +=  $(addprefix -I ,$(INCLUDEDIRS))
 
 # Static libraries
 CLIBS =  -L ./Build 
-CLIBS += -lstm32f7
+CLIBS +=  -lgcc -lm -lc -lg -lstm32f7
 
 BUILD_PRINT = @echo -e "\e[1;32mBuilding $<\e[0m"
 
@@ -96,7 +102,7 @@ BUILD_PRINT = @echo -e "\e[1;32mBuilding $<\e[0m"
 
 all: proj
 
-proj: libstm32f7.a Build/$(PROJ_NAME).elf
+proj: libstm32f7.a  Build/$(PROJ_NAME).elf
 
 libstm32f7.a: $(LIBOBJS)
 	$(BUILD_PRINT)
@@ -107,10 +113,10 @@ libstm32f7.a: $(LIBOBJS)
 	$(BUILD_PRINT)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-Build/$(PROJ_NAME).elf: $(SOURCES)
+Build/$(PROJ_NAME).elf: $(SOURCES) $(STUBS_OBJ)
 	@echo
 	$(BUILD_PRINT)
-	$(CC) -Os $(CFLAGS) $^ -o $@ $(CLIBS) -T $(LDSCRIPT) -MD
+	$(CC) -Os $(CFLAGS) $^ -o $@ $(CLIBS) -T $(LDSCRIPT) -MD 
 	$(OBJCOPY) -O ihex Build/$(PROJ_NAME).elf Build/$(PROJ_NAME).hex
 	$(OBJCOPY) -O binary Build/$(PROJ_NAME).elf Build/$(PROJ_NAME).bin
 	$(OBJDUMP) -St Build/$(PROJ_NAME).elf >Build/$(PROJ_NAME).lst

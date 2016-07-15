@@ -59,6 +59,44 @@ static void CPU_CACHE_Enable(void);
 /* Private functions ---------------------------------------------------------*/
 
 /**
+  * @brief  LCD Log demo
+  * @param  None
+  * @retval None
+  */
+void Log_demo(void)
+{
+  uint8_t   i = 0;
+
+  /* Initialize LCD Log module */
+  LCD_LOG_Init();
+
+  /* Show Header and Footer texts */
+  LCD_LOG_SetHeader((uint8_t *)"Log Example");
+
+  /* Output User logs */
+  for (i = 0; i < 10; i++)
+  {
+    LCD_ErrLog ("This is Line %d \n", i);
+  }
+
+  LCD_LOG_UpdateDisplay();
+
+  HAL_Delay(500);
+
+  /* Clear Old logs */
+  LCD_LOG_ClearTextZone();
+
+  /* Output new user logs */
+  for (i = 0; i < 30; i++)
+  {
+    LCD_UsrLog ("This is Line %d \n", i);
+  }
+
+  LCD_LOG_UpdateDisplay();
+  
+}
+
+/**
   * @brief  Main program
   * @param  None
   * @retval None
@@ -115,6 +153,8 @@ int main(void)
   BSP_LCD_DrawRect(x0, y0, x1-x0, y1-y0);
   BSP_LCD_DrawLine(x0, y0, x1, y1);
   BSP_LCD_DrawLine(x0, y1, x1, y0);
+  
+  Log_demo();
   
   /* Infinite loop */
   while (1)

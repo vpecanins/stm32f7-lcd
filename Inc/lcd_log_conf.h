@@ -66,7 +66,7 @@
   */ 
 
 /* Comment the line below to disable the scroll back and forward features */
-#define     LCD_SCROLL_ENABLED      1 
+#define     LCD_SCROLL_ENABLED      0
 
 /* Define the Fonts  */
 #define     LCD_LOG_HEADER_FONT                   Font16

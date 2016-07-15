@@ -44,6 +44,7 @@
 #include "stm32746g_discovery.h"
 #include "stm32746g_discovery_lcd.h"
 #include "stm32746g_discovery_sdram.h"
+#include "lcd_log.h"
 
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
