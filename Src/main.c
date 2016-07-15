@@ -79,8 +79,6 @@ void Log_demo(void)
     LCD_ErrLog ("This is Line %d \n", i);
   }
 
-  LCD_LOG_UpdateDisplay();
-
   HAL_Delay(500);
 
   /* Clear Old logs */
@@ -91,8 +89,6 @@ void Log_demo(void)
   {
     LCD_UsrLog ("This is Line %d \n", i);
   }
-
-  LCD_LOG_UpdateDisplay();
   
 }
 
@@ -153,6 +149,8 @@ int main(void)
   BSP_LCD_DrawRect(x0, y0, x1-x0, y1-y0);
   BSP_LCD_DrawLine(x0, y0, x1, y1);
   BSP_LCD_DrawLine(x0, y1, x1, y0);
+  
+  HAL_Delay(1000);
   
   Log_demo();
   

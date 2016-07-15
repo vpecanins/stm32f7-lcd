@@ -110,7 +110,11 @@ LoopFillZerobss:
 /* Call the clock system initialization function.*/
   bl  SystemInit   
 /* Call static constructors */
-    bl __libc_init_array
+  /* IMPORTANT: Comment this line to be able to compile with -nostartfiles,
+   * needed for printf to LCD. [Victor]
+   *
+   *  bl __libc_init_array
+   */
 /* Call the application's entry point.*/
   bl  main
   bx  lr    

@@ -69,9 +69,9 @@ LIBSOURCES += ./Utilities/Log/lcd_log.c
 
 LIBOBJS = $(LIBSOURCES:.c=.o) 
 
-# Workaround
-STUBS_SRC = ./Utilities/Log/stubs.c
-STUBS_OBJ = $(STUBS_SRC:.c=.o)
+# Syscall stubs (for printf, malloc...)
+LIBSOURCES += ./Utilities/Log/syscalls.c
+LIBOBJS += $(STUBS_SRC:.c=.o)
 
 # Project specific sources
 SOURCES = $(shell find ./Src -name *.c)
@@ -88,13 +88,13 @@ LDSCRIPT = ./Config/ldscripts/STM32F746NGHx_FLASH.ld
 # GCC flags
 CFLAGS = -Wall -g -std=c99 -Os -D $(CPU_MODEL_GENERAL) -include stm32f7xx_hal_conf.h -Werror-implicit-function-declaration
 CFLAGS += -mlittle-endian -mcpu=cortex-m7 -mthumb -DARM_MATH_CM7
-CFLAGS += -ffunction-sections -fdata-sections 
+CFLAGS += -nostartfiles -fdata-sections -ffunction-sections 
 CFLAGS += -Wl,--gc-sections -Wl,-Map=Build/$(PROJ_NAME).map 
 CFLAGS +=  $(addprefix -I ,$(INCLUDEDIRS)) 
 
 # Static libraries
 CLIBS =  -L ./Build 
-CLIBS +=  -lgcc -lm -lc -lg -lstm32f7
+CLIBS +=  -Wl,--start-group -lgcc -lc -lg -lstm32f7 -Wl,--end-group
 
 BUILD_PRINT = @echo -e "\e[1;32mBuilding $<\e[0m"
 
@@ -113,7 +113,7 @@ libstm32f7.a: $(LIBOBJS)
 	$(BUILD_PRINT)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-Build/$(PROJ_NAME).elf: $(SOURCES) $(STUBS_OBJ)
+Build/$(PROJ_NAME).elf: $(SOURCES) 
 	@echo
 	$(BUILD_PRINT)
 	$(CC) -Os $(CFLAGS) $^ -o $@ $(CLIBS) -T $(LDSCRIPT) -MD 
